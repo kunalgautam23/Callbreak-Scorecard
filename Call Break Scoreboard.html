@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Call Break Scoreboard</title>
+<meta name="theme-color" content="#0a1224">
+
+<style>:root{--bg:#0a1224;--card:#121c36;--ink:#eaf0ff;--mut:#8fa0c4;--em:#10b981;--gold:#f5c542;--pos:#34d399;--neg:#f87171;--line:#223056}
+[data-theme=light]{--bg:#eef3ee;--card:#fff;--ink:#0d1b2a;--mut:#51627a;--em:#059669;--gold:#b7860b;--pos:#047857;--neg:#dc2626;--line:#d3ddd6}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#0f3d3a55,transparent),var(--bg);color:var(--ink);font:16px/1.4 Georgia,"Iowan Old Style",serif;min-height:100vh}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5;letter-spacing:.12em}
+header button{background:none;border:0;font-size:22px;padding:6px 8px;cursor:pointer}
+main{max-width:760px;margin:0 auto;padding:14px}
+h1{font-size:clamp(26px,7vw,40px);margin:.2em 0;text-align:center;letter-spacing:.06em}
+.sub{text-align:center;color:var(--mut);font-style:italic;margin:0 0 18px}
+.suits{text-align:center;font-size:44px;letter-spacing:12px}.suits .r{color:var(--neg)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px}
+input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;width:100%;min-height:48px}
+input:focus,button:focus-visible,select:focus{outline:2px solid var(--em)}
+#names input,#names2 input{margin-bottom:10px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}.row input,.row select{width:120px}
+.chk input{width:24px;min-height:24px}
+button{font:inherit;font-family:system-ui,sans-serif;font-weight:600;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-height:48px;cursor:pointer;transition:transform .1s}
+button:active{transform:scale(.96)}button:disabled{opacity:.4}
+button.pri{background:linear-gradient(135deg,#059669,#10b981);color:#04130d;border:0;width:100%;font-size:18px;margin-top:8px}
+.danger{color:var(--neg)}
+.banner{text-align:center;font-size:22px;padding:10px;margin-bottom:10px;color:var(--gold)}.banner small{display:block;color:var(--mut);font-size:14px}
+.lb{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:14px 0}
+.pc{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;font-family:system-ui,sans-serif;font-size:14px;color:var(--mut)}
+.pc b{display:block;font:700 18px Georgia,serif;color:var(--ink)}.pc .big{font:700 28px Georgia,serif}
+.pc.lead{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 8px 24px #f5c54222}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+.wrap{overflow-x:auto;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:420px;text-align:center;font-family:system-ui,sans-serif;font-variant-numeric:tabular-nums}
+th,td{padding:12px 8px;border-bottom:1px solid var(--line)}th{color:var(--mut)}
+td:first-child,th:first-child{text-align:left;padding-left:14px;white-space:nowrap}
+td button{min-height:34px;padding:2px 8px;margin-left:4px;font-size:14px}
+tr.tot td{font-weight:800;font-size:18px;border-bottom:0;background:#10b98115}
+td.top{color:var(--gold)!important}th.top{color:var(--gold)}
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:14px 0 40px}
+dialog{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:22px;width:min(94vw,520px);padding:18px;max-height:92vh}
+dialog::backdrop{background:#000a;backdrop-filter:blur(3px)}
+dialog[open]{animation:pop .2s ease-out}@keyframes pop{from{transform:scale(.94);opacity:0}}
+h2{margin:0 0 10px}.pr{display:grid;grid-template-columns:1fr 84px 84px;gap:8px;align-items:end;margin-bottom:10px}
+.pr label{font:12px system-ui;color:var(--mut)}.pr b{padding-bottom:14px;overflow:hidden;text-overflow:ellipsis}
+.sum{font-family:system-ui;text-align:center;font-weight:700}.err{color:var(--neg);font:14px system-ui;min-height:1em}.hint{color:var(--mut);font:14px system-ui}
+.act{display:flex;gap:8px;margin-top:10px}.act button{flex:1}.wrapact{flex-wrap:wrap}.wrapact button{flex:1 1 45%}
+.done{text-align:center}.trophy{font-size:64px;animation:bob 1.6s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px) rotate(4deg)}}
+.win{font-size:32px;color:var(--gold);font-weight:700}
+.fr{display:flex;justify-content:space-between;padding:8px 4px;border-bottom:1px solid var(--line);font-family:system-ui;text-align:left}
+.hi{padding:8px 0;border-bottom:1px solid var(--line);font-family:system-ui;font-size:14px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,80px);background:var(--em);color:#04130d;padding:10px 18px;border-radius:30px;font:600 14px system-ui;transition:transform .25s;z-index:99}#toast.on{transform:translate(-50%,0)}
+.cf{position:fixed;top:-20px;width:10px;height:14px;z-index:100;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body>
+<header><b>♠ CALL BREAK</b><span><button id="bHist" title="History">🕘</button><button id="bSet" title="Scoring rules">⚙️</button><button id="bTheme" title="Dark / light">🌓</button></span></header>
+<main>
+<section id="setup">
+<div class="suits"><i>♠</i><i class="r">♥</i><i class="r">♦</i><i>♣</i></div>
+<h1>CALL BREAK SCOREBOARD</h1><p class="sub">Play Cards. Track Scores. Crown the Champion.</p>
+<div class="card"><div id="names"></div>
+<label class="row">Rounds <input id="rounds" type="number" min="1" max="99" value="5" inputmode="numeric"></label>
+<label class="row chk"><input id="unl" type="checkbox"> Unlimited rounds</label>
+<button class="pri" id="bStart">Start Match</button>
+<button id="bResume" hidden>Resume previous match</button></div>
+</section>
+<section id="game" hidden>
+<div class="banner" id="banner"></div>
+<button class="pri" id="bAdd">+ Enter Round</button>
+<div id="lb" class="lb"></div>
+<div class="wrap"><table id="tbl"></table></div>
+<div class="tools">
+<button id="bUndo">↶ Undo last round</button><button id="bNames">✎ Edit names</button><button id="bFin">🏁 Finish match</button>
+<button id="bCsv">⬇ CSV</button><button id="bPng">🖼 PNG</button><button id="bShare">📤 Share</button>
+<button id="bReset" class="danger">Reset match</button><button id="bNew">New match</button></div>
+</section></main>
+<div id="toast"></div>
+
+<dialog id="dRound"><h2 id="rt"></h2><div id="rbody"></div><p id="sumLine" class="sum"></p><p id="err" class="err"></p>
+<div class="act"><button data-close>Cancel</button><button class="pri" id="bSave">Calculate &amp; Save Round</button></div></dialog>
+
+<dialog id="dSet"><h2>Scoring rules</h2>
+<p class="hint">Made your bid: bid + extra tricks × bonus. Missed it: −bid × penalty. Changes recalculate every round.</p>
+<label class="row">Bonus per extra trick <input id="sExtra" type="number" step="0.1" min="0" max="5"></label>
+<label class="row">Penalty multiplier <select id="sMult"><option value="1">1× bid</option><option value="2">2× bid</option></select></label>
+<div class="act"><button data-close>Cancel</button><button class="pri" id="bSaveSet">Save rules</button></div></dialog>
+
+<dialog id="dNames"><h2>Edit player names</h2><div id="names2"></div>
+<div class="act"><button data-close>Cancel</button><button class="pri" id="bSaveNames">Save names</button></div></dialog>
+
+<dialog id="dHist"><h2>Match history</h2><div id="hbody"></div>
+<div class="act"><button id="bClearH" class="danger">Clear history</button><button data-close class="pri">Close</button></div></dialog>
+
+<dialog id="dDone"><div class="done"><div class="trophy">🏆</div><h2>Match Completed!</h2>
+<div id="win" class="win"></div><p id="margin" class="hint"></p><div id="final"></div>
+<div class="act wrapact"><button class="pri" id="bAgain">Play Again</button><button id="bNew2">New Match</button><button id="bView">View Full Scorecard</button><button id="bShare2">Share Results</button></div></div></dialog>
+<script>'use strict';
+const $=s=>document.querySelector(s),LS={getItem:k=>{try{return localStorage.getItem(k)}catch{return null}},setItem:(k,v)=>{try{localStorage.setItem(k,v)}catch{}}};
+const J=(k,d)=>{try{return JSON.parse(LS.getItem(k))??d}catch{return d}};
+const S=(k,v)=>LS.setItem(k,JSON.stringify(v));
+let st=J('cb_state',null),set=J('cb_set',{extra:1,mult:1}),hist=J('cb_hist',[]),edit=null,view=st?'game':'setup';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// all scoring is in integer tenths
+const sc=(b,w)=>w>=b?b*10+(w-b)*set.extra:-b*10*set.mult;
+const num=t=>(t/10).toFixed(1).replace('-','−');
+const fmt=t=>(t>0?'+':'')+num(t);
+const cls=t=>t>0?'pos':t<0?'neg':'';
+const save=()=>{S('cb_state',st);S('cb_set',set);S('cb_hist',hist)};
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200)};
+const ord=n=>n+(['th','st','nd','rd'][(n%100>10&&n%100<14)?0:n%10]||'th');
+function stats(){
+ const P=st.players.map((n,i)=>({i,n,t:0,ok:0,bad:0,ex:0}));
+ st.rounds.forEach(r=>P.forEach(p=>{const b=r.b[p.i],w=r.w[p.i];p.t+=sc(b,w);if(w>=b){p.ok++;p.ex+=w-b}else p.bad++}));
+ P.forEach(p=>p.rk=1+P.filter(x=>x.t>p.t).length);return P}
+function nameInputs(el,vals){el.innerHTML=vals.map((v,i)=>`<input maxlength="16" aria-label="Player ${i+1} name" value="${esc(v)}">`).join('')}
+const readNames=el=>[...el.querySelectorAll('input')].map((x,i)=>x.value.trim()||'Player '+(i+1));
+function show(){
+ $('#setup').hidden=view!=='setup';$('#game').hidden=view!=='game';
+ if(view==='setup'){nameInputs($('#names'),st?st.players:['Player 1','Player 2','Player 3','Player 4']);$('#bResume').hidden=!st}
+ else render()}
+function render(){
+ const P=stats(),n=st.rounds.length,hasRounds=n>0,maxT=Math.max(...P.map(p=>p.t));
+ $('#banner').innerHTML=st.done?'Match Completed!':`Round ${n+1}<small>${st.total?`of ${st.total}`:'unlimited rounds'}</small>`;
+ $('#bAdd').hidden=st.done;
+ $('#bFin').textContent=st.done?'🏆 View result':'🏁 Finish match';$('#bFin').disabled=!hasRounds;
+ $('#bUndo').disabled=!hasRounds;$('#bCsv').disabled=$('#bPng').disabled=$('#bShare').disabled=$('#bReset').disabled=!hasRounds;
+ $('#lb').innerHTML=[...P].sort((a,b)=>a.rk-b.rk||a.i-b.i).map(p=>{const lead=hasRounds&&p.t===maxT;
+  return `<div class="pc ${lead?'lead':''}"><b>${lead?'👑 ':''}${esc(p.n)}</b>${ord(p.rk)} place<div class="big ${cls(p.t)}">${num(p.t)}</div>✔ ${p.ok} made · ✘ ${p.bad} failed<br>+${p.ex} extra tricks</div>`}).join('');
+ let h=`<tr><th>Round</th>${P.map(p=>`<th class="${hasRounds&&p.t===maxT?'top':''}">${hasRounds&&p.t===maxT?'👑 ':''}${esc(p.n)}</th>`).join('')}</tr>`;
+ st.rounds.forEach((r,k)=>{h+=`<tr><td>${k+1}<button data-e="${k}" title="Edit round">✎</button><button data-d="${k}" title="Delete round">🗑</button></td>${P.map(p=>{const s=sc(r.b[p.i],r.w[p.i]);return `<td class="${cls(s)}" title="Bid ${r.b[p.i]}, won ${r.w[p.i]}">${fmt(s)}</td>`}).join('')}</tr>`});
+ h+=`<tr class="tot"><td>Total</td>${P.map(p=>`<td class="${hasRounds&&p.t===maxT?'top':cls(p.t)}">${num(p.t)}</td>`).join('')}</tr>`;
+ $('#tbl').innerHTML=h;save()}
+// ---------- round entry
+function openRound(i){
+ edit=i;const r=i==null?null:st.rounds[i];
+ $('#rt').textContent=i==null?`Round ${st.rounds.length+1}`:`Edit round ${i+1}`;
+ $('#rbody').innerHTML=st.players.map((n,k)=>`<div class="pr"><b>${esc(n)}</b><label>Bid<input type="number" inputmode="numeric" min="1" max="13" data-b="${k}" value="${r?r.b[k]:''}"></label><label>Won<input type="number" inputmode="numeric" min="0" max="13" data-w="${k}" value="${r?r.w[k]:''}"></label></div>`).join('');
+ $('#err').textContent='';sumLine();$('#dRound').showModal()}
+function sumLine(){const s=[...document.querySelectorAll('[data-w]')].reduce((a,x)=>a+(+x.value||0),0);
+ $('#sumLine').textContent=`Tricks won: ${s} / 13`;$('#sumLine').className='sum '+(s===13?'pos':'')}
+function saveRound(){
+ const b=[],w=[],e=[];
+ st.players.forEach((n,k)=>{const bv=$(`[data-b="${k}"]`).value,wv=$(`[data-w="${k}"]`).value,B=Number(bv),W=Number(wv);
+  if(bv===''||!Number.isInteger(B)||B<1||B>13)e.push(`${n}: bid must be a whole number from 1 to 13`);
+  if(wv===''||!Number.isInteger(W)||W<0||W>13)e.push(`${n}: tricks won must be a whole number from 0 to 13`);
+  b.push(B);w.push(W)});
+ if(!e.length){const s=w.reduce((a,c)=>a+c,0);if(s!==13)e.push(`Tricks won add up to ${s}. They must total exactly 13.`)}
+ if(e.length){$('#err').innerHTML=e.map(esc).join('<br>');return}
+ const r={b,w};edit==null?st.rounds.push(r):st.rounds[edit]=r;
+ st.done=st.total>0&&st.rounds.length>=st.total;
+ $('#dRound').close();render();toast('Round saved');
+ if(st.done&&edit==null)showDone()}
+// ---------- match flow
+function archive(){if(st&&st.rounds.length&&!st.arch){const P=stats();hist.unshift({d:Date.now(),n:st.rounds.length,p:P.map(x=>[x.n,x.t])});hist=hist.slice(0,50);st.arch=1;S('cb_hist',hist)}}
+function start(names,total){archive();st={players:names,total,rounds:[],done:false};view='game';save();show()}
+function winners(P){const m=Math.max(...P.map(p=>p.t));return P.filter(p=>p.t===m)}
+function showDone(){
+ const P=stats(),W=winners(P),rest=P.filter(p=>p.t<W[0].t),margin=rest.length?W[0].t-Math.max(...rest.map(p=>p.t)):0;
+ $('#win').textContent=(W.length>1?'🤝 Tie: ':'👑 ')+W.map(p=>p.n).join(' & ');
+ $('#margin').textContent=W.length>1?'Tied at '+num(W[0].t)+' points':`Won by ${num(margin)} points`;
+ $('#final').innerHTML=[...P].sort((a,b)=>a.rk-b.rk).map(p=>`<div class="fr"><span>${ord(p.rk)} ${esc(p.n)}</span><b class="${cls(p.t)}">${num(p.t)}</b></div>`).join('');
+ $('#dDone').showModal();confetti()}
+function confetti(){const c=['#f5c542','#10b981','#f87171','#60a5fa','#fff'];
+ for(let i=0;i<70;i++){const d=document.createElement('div');d.className='cf';
+  d.style.cssText=`left:${Math.random()*100}vw;background:${c[i%5]};animation-duration:${2+Math.random()*2.5}s;animation-delay:${Math.random()*.8}s`;
+  document.body.appendChild(d);setTimeout(()=>d.remove(),5500)}}
+// ---------- export / share
+function resultText(){const P=stats(),W=winners(P);
+ return `♠ Call Break Results ♠\n`+[...P].sort((a,b)=>a.rk-b.rk).map(p=>`${ord(p.rk)} ${p.n}: ${num(p.t)}`).join('\n')+`\n🏆 ${W.map(p=>p.n).join(' & ')} ${W.length>1?'tie':'wins'} after ${st.rounds.length} rounds`}
+async function share(){const text=resultText();
+ try{if(navigator.share){await navigator.share({title:'Call Break Results',text});return}}catch(e){if(e.name==='AbortError')return}
+ window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank')}
+async function download(name,blob){try{const d=window.claude&&await window.claude.use('downloads');if(!d)return toast('Downloads unavailable here');await d.save({filename:name,data:blob})}catch(e){if(!e||e.code!=='declined')toast('Could not save file')}}
+function csv(){const P=stats(),q=s=>`"${String(s).replace(/"/g,'""')}"`;
+ let o=['Round',...P.map(p=>q(p.n))].join(',')+'\n';
+ st.rounds.forEach((r,k)=>o+=[k+1,...P.map(p=>(sc(r.b[p.i],r.w[p.i])/10).toFixed(1))].join(',')+'\n');
+ o+=['Total',...P.map(p=>(p.t/10).toFixed(1))].join(',');
+ download('call-break-scorecard.csv',new Blob([o],{type:'text/csv'}))}
+function png(){const P=stats(),R=st.rounds.length,cw=150,W=130+cw*4,H=110+(R+2)*46,c=document.createElement('canvas');c.width=W;c.height=H;
+ const x=c.getContext('2d'),m=Math.max(...P.map(p=>p.t));
+ x.fillStyle='#0a1224';x.fillRect(0,0,W,H);x.fillStyle='#f5c542';x.font='bold 26px Georgia';x.textAlign='center';x.fillText('♠ CALL BREAK SCOREBOARD ♥',W/2,42);
+ const row=(y,cells,bold)=>cells.forEach((t,i)=>{x.textAlign=i?'center':'left';x.font=(bold?'bold ':'')+'20px system-ui';x.fillStyle=t.c||'#eaf0ff';x.fillText(t.s,i?130+cw*(i-1)+cw/2:20,y)});
+ row(90,[{s:'Round',c:'#8fa0c4'},...P.map(p=>({s:p.n,c:p.t===m?'#f5c542':'#8fa0c4'}))],1);
+ st.rounds.forEach((r,k)=>row(136+k*46,[{s:String(k+1)},...P.map(p=>{const s=sc(r.b[p.i],r.w[p.i]);return{s:fmt(s),c:s<0?'#f87171':'#34d399'}})]));
+ x.fillStyle='#10b98133';x.fillRect(0,106+R*46,W,46);
+ row(136+R*46,[{s:'Total'},...P.map(p=>({s:num(p.t),c:p.t===m?'#f5c542':'#eaf0ff'}))],1);
+ c.toBlob(b=>download('call-break-scorecard.png',b))}
+// ---------- events
+document.addEventListener('click',e=>{const t=e.target;
+ if(t.closest('[data-close]'))t.closest('dialog').close();
+ if(t.dataset.e!==undefined)openRound(+t.dataset.e);
+ if(t.dataset.d!==undefined){const k=+t.dataset.d;if(confirm(`Delete round ${k+1}? Totals will be recalculated.`)){st.rounds.splice(k,1);st.done=st.total>0&&st.rounds.length>=st.total;render()}}});
+document.addEventListener('input',e=>{if(e.target.dataset.w!==undefined)sumLine()});
+$('#bStart').onclick=()=>{const unl=$('#unl').checked,r=parseInt($('#rounds').value,10);
+ if(!unl&&!(r>=1&&r<=99))return toast('Enter rounds from 1 to 99, or choose unlimited');
+ if(st&&st.rounds.length&&!st.arch&&!confirm('Start a new match? The unfinished match will be saved to history.'))return;
+ start(readNames($('#names')),unl?0:r)};
+$('#bResume').onclick=()=>{view='game';show()};
+$('#bAdd').onclick=()=>openRound(null);$('#bSave').onclick=saveRound;
+$('#bUndo').onclick=()=>{if(st.rounds.length&&confirm('Undo the last saved round?')){st.rounds.pop();st.done=false;render()}};
+$('#bNames').onclick=()=>{nameInputs($('#names2'),st.players);$('#dNames').showModal()};
+$('#bSaveNames').onclick=()=>{st.players=readNames($('#names2'));$('#dNames').close();render()};
+$('#bFin').onclick=()=>{if(st.done)return showDone();if(confirm('Finish the match now and crown the winner?')){st.done=true;render();showDone()}};
+$('#bCsv').onclick=csv;$('#bPng').onclick=png;$('#bShare').onclick=$('#bShare2').onclick=share;
+$('#bReset').onclick=()=>{if(confirm('Reset match? All rounds will be erased.')){st.rounds=[];st.done=false;st.arch=0;render()}};
+const newMatch=()=>{if(st.rounds.length&&!st.arch&&!confirm('Leave this match? It will be saved to history.'))return;$('#dDone').close();archive();save();view='setup';show()};
+$('#bNew').onclick=$('#bNew2').onclick=newMatch;
+$('#bAgain').onclick=()=>{$('#dDone').close();start([...st.players],st.total)};
+$('#bView').onclick=()=>{$('#dDone').close();scrollTo({top:0,behavior:'smooth'})};
+$('#bSet').onclick=()=>{$('#sExtra').value=(set.extra/10).toFixed(1);$('#sMult').value=set.mult;$('#dSet').showModal()};
+$('#bSaveSet').onclick=()=>{const v=parseFloat($('#sExtra').value);if(!(v>=0&&v<=5))return toast('Bonus must be 0 to 5');
+ set={extra:Math.round(v*10),mult:+$('#sMult').value};save();$('#dSet').close();if(st&&view==='game')render();toast('Scoring rules saved')};
+$('#bHist').onclick=()=>{$('#hbody').innerHTML=hist.length?hist.map(h=>{const m=Math.max(...h.p.map(x=>x[1]));
+  return `<div class="hi"><b>${new Date(h.d).toLocaleString()}</b> · ${h.n} rounds<br>🏆 ${esc(h.p.filter(x=>x[1]===m).map(x=>x[0]).join(' & '))}<br>${h.p.map(x=>esc(x[0])+' '+num(x[1])).join(' · ')}</div>`}).join(''):'<p class="hint">No finished or abandoned matches yet.</p>';
+ $('#dHist').showModal()};
+$('#bClearH').onclick=()=>{if(confirm('Delete all match history?')){hist=[];S('cb_hist',hist);$('#hbody').innerHTML='<p class="hint">History cleared.</p>'}};
+$('#unl').onchange=e=>$('#rounds').disabled=e.target.checked;
+// theme
+const setTheme=t=>{document.documentElement.dataset.theme=t;LS.setItem('cb_theme',t);document.querySelector('meta[name=theme-color]').content=t==='light'?'#eef3ee':'#0a1224'};
+setTheme(LS.getItem('cb_theme')||'dark');
+$('#bTheme').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+show();
+</script></body></html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Call Break Scoreboard</title>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0a1224">
+<link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css"></head><body>
+<header><b>♠ CALL BREAK</b><span><button id="bHist" title="History">🕘</button><button id="bSet" title="Scoring rules">⚙️</button><button id="bTheme" title="Dark / light">🌓</button></span></header>
+<main>
+<section id="setup">
+<div class="suits"><i>♠</i><i class="r">♥</i><i class="r">♦</i><i>♣</i></div>
+<h1>CALL BREAK SCOREBOARD</h1><p class="sub">Play Cards. Track Scores. Crown the Champion.</p>
+<div class="card"><div id="names"></div>
+<label class="row">Rounds <input id="rounds" type="number" min="1" max="99" value="5" inputmode="numeric"></label>
+<label class="row chk"><input id="unl" type="checkbox"> Unlimited rounds</label>
+<button class="pri" id="bStart">Start Match</button>
+<button id="bResume" hidden>Resume previous match</button></div>
+</section>
+<section id="game" hidden>
+<div class="banner" id="banner"></div>
+<button class="pri" id="bAdd">+ Enter Round</button>
+<div id="lb" class="lb"></div>
+<div class="wrap"><table id="tbl"></table></div>
+<div class="tools">
+<button id="bUndo">↶ Undo last round</button><button id="bNames">✎ Edit names</button><button id="bFin">🏁 Finish match</button>
+<button id="bCsv">⬇ CSV</button><button id="bPng">🖼 PNG</button><button id="bShare">📤 Share</button>
+<button id="bReset" class="danger">Reset match</button><button id="bNew">New match</button></div>
+</section></main>
+<div id="toast"></div>
+
+<dialog id="dRound"><h2 id="rt"></h2><div id="rbody"></div><p id="sumLine" class="sum"></p><p id="err" class="err"></p>
+<div class="act"><button data-close>Cancel</button><button class="pri" id="bSave">Calculate &amp; Save Round</button></div></dialog>
+
+<dialog id="dSet"><h2>Scoring rules</h2>
+<p class="hint">Made your bid: bid + extra tricks × bonus. Missed it: −bid × penalty. Changes recalculate every round.</p>
+<label class="row">Bonus per extra trick <input id="sExtra" type="number" step="0.1" min="0" max="5"></label>
+<label class="row">Penalty multiplier <select id="sMult"><option value="1">1× bid</option><option value="2">2× bid</option></select></label>
+<div class="act"><button data-close>Cancel</button><button class="pri" id="bSaveSet">Save rules</button></div></dialog>
+
+<dialog id="dNames"><h2>Edit player names</h2><div id="names2"></div>
+<div class="act"><button data-close>Cancel</button><button class="pri" id="bSaveNames">Save names</button></div></dialog>
+
+<dialog id="dHist"><h2>Match history</h2><div id="hbody"></div>
+<div class="act"><button id="bClearH" class="danger">Clear history</button><button data-close class="pri">Close</button></div></dialog>
+
+<dialog id="dDone"><div class="done"><div class="trophy">🏆</div><h2>Match Completed!</h2>
+<div id="win" class="win"></div><p id="margin" class="hint"></p><div id="final"></div>
+<div class="act wrapact"><button class="pri" id="bAgain">Play Again</button><button id="bNew2">New Match</button><button id="bView">View Full Scorecard</button><button id="bShare2">Share Results</button></div></div></dialog>
+<script src="script.js"></script></body></html>
